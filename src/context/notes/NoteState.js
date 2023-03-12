@@ -34,6 +34,7 @@ const addNote=async (title, description, tag)=>{
         body: JSON.stringify({title, description, tag}),
       });
       const json= response.json(); 
+      console.log(json)
     console.log("Adding a new note")
     const note = {
         "_id": "64046789539f6c36303awe115",
@@ -58,8 +59,9 @@ const deleteNote=async (id)=>{
         },
       });
       const json= response.json(); 
+      console.log(json)
     console.log("Deleting note with id "+ id);
-    const newNotes= notes.filter((note)=>{return note._id!=id})
+    const newNotes= notes.filter((note)=>{return note._id!==id})
     setNotes(newNotes)
 }
 
@@ -67,23 +69,30 @@ const deleteNote=async (id)=>{
 const editNote=async (id, title, description, tag)=>{
     //API call
     const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
-        method: "POST", 
+        method: "PUT", 
         headers: {
           "Content-Type": "application/json",
           "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQwMzNhZGI3YjEzYzNlODIwNTFlNjMwIn0sImlhdCI6MTY3NzkzNjE0N30.3dEq5hVk9AcdhOM0AWcM-31IzQdTF60xt0QfbnBVAPo"
         },
         body: JSON.stringify({title, description, tag}),
       });
-      const json= response.json(); 
+
+      const json= await response.json(); 
+      console.log(json)
+
+      let newNotes=JSON.parse(JSON.stringify(notes))
     //Logic to edit in client
-    for (let index = 0; index < notes.length; index++) {
+    for (let index = 0; index < newNotes.length; index++) {
         const element = notes[index];
         if(element._id===id){
-            element.title=title;
-            element.description=description;
-            element.tag=tag;
+          newNotes[index].title=title;
+          newNotes[index].description=description;
+          newNotes[index].tag=tag;
+          break;
         }
+        
     }
+    setNotes(newNotes)
 }
 
     return (
